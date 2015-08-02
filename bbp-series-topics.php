@@ -74,22 +74,40 @@ class Bbp_Series_Topics {
 
 		$series_parent = get_post( $post_series );
 
+
 		$series_title_url = get_permalink( $series_parent->ID );
 
-		$series_items_raw = "<li><a href=\"%s\">%s</a>\n";
+		$series_items_raw = "<li><a href=\"%s\">%s</a></li>\n";
+		$series_items_raw_bare = "<li>%s</li>\n";
+
 
 		$series_items = '';
 		foreach( $series as $article ) {
 
+
 			$series_items_link = get_permalink( $article->ID );
+
 			$series_items_title = $article->post_title;
 
-			$series_items .= sprintf(
-				$series_items_raw,
-				$series_items_link,
-				$series_items_title
-			);
+			if( $post->ID != $article->ID ) {
+				$series_items .= sprintf(
+					$series_items_raw,
+					$series_items_link,
+					$series_items_title
+				);
+			} else {
+				$series_items .= sprintf(
+					$series_items_raw_bare,
+					$series_items_title
+				);
+			}
 
+		}
+
+		if( $post->ID != $series_parent->ID ) {
+			$series_header = "Series: <a href=\"{$series_title_url}\">{$series_parent->post_title}</a>";
+		} else {
+			$series_header = $series_parent->post_title;
 		}
 
 		echo <<<SERIES
@@ -98,7 +116,7 @@ class Bbp_Series_Topics {
 
 	<li class="bbp-header">
 
-		Series: <a href="{$series_title_url}">{$series_parent->post_title}</a>
+		{$series_header}
 
 	</li>
 
