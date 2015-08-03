@@ -107,7 +107,7 @@ class Bbp_Series_Topics {
 		if( $post->ID != $series_parent->ID ) {
 			$series_header = "Series: <a href=\"{$series_title_url}\">{$series_parent->post_title}</a>";
 		} else {
-			$series_header = $series_parent->post_title;
+			$series_header = "Series: " . $series_parent->post_title;
 		}
 
 		echo <<<SERIES
@@ -140,17 +140,25 @@ SERIES;
 
 		global $post;
 
-		if(
-			!empty(  $this->settings['post_parent'] )
-			&&
-			$this->settings['post_parent'] != $post->post_parent
-		) {
-			return;
+		if( !empty(  $this->settings['post_parent'] ) ) {
+
+			if( $this->settings['post_parent'] != $post->post_parent ) {
+
+				if( $this->settings['post_parent'] != $post->ID ) {
+					return;
+				}
+
+			}
+
 		}
 
-		$series_posts = $this->get_series( bbp_get_displayed_user_id() );
+		$user_id = bbp_get_displayed_user_id();
 
-		global $post;
+		if( empty( $user_id ) || $user_id == 0 ) {
+			$user_id = get_current_user_id();
+		}
+
+		$series_posts = $this->get_series( $user_id );
 
 		$series_selected = get_post_meta( $post->ID, $this->settings['key'], true );
 
